@@ -4,7 +4,7 @@
   Referrer-Policy: strict-origin-when-cross-origin
   X-Frame-Options: SAMEORIGIN
   Permissions-Policy: geolocation=(), microphone=(), camera=()
-  Content-Security-Policy: default-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; script-src 'self' https://www.googletagmanager.com; connect-src 'self' https://www.google-analytics.com https://formspree.io; form-action https://formspree.io; frame-ancestors 'self'; base-uri 'self'
+  Content-Security-Policy: default-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; script-src 'self' https://www.googletagmanager.com; connect-src 'self' https://www.google-analytics.com https://formspree.io https://formsubmit.co; form-action https://formspree.io https://formsubmit.co; frame-ancestors 'self'; base-uri 'self'
 
 /assets/*
   Cache-Control: public, max-age=31536000, immutable

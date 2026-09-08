@@ -25,12 +25,9 @@
 
 <header class="site-head">
   <div class="wrap">
-    <a class="brand" href="/">
-      <svg width="22" height="22" viewBox="0 0 26 26" aria-hidden="true" focusable="false">
-        <rect x="0" y="0" width="11" height="11" fill="#7FD7BC"></rect><rect x="15" y="0" width="11" height="11" fill="#3E8A78"></rect>
-        <rect x="0" y="15" width="11" height="11" fill="#3E8A78"></rect><rect x="15" y="15" width="11" height="11" fill="#1D4B41"></rect>
-      </svg>
-      Hilvert Advisory
+    <a class="brand" href="/" aria-label="Hilvert Advisory — home">
+      <img src="/assets/images/hilvert-logo-light.png" alt="Hilvert Advisory"
+           width="383" height="73" fetchpriority="high">
     </a>
     <button class="navtoggle" aria-expanded="false" aria-controls="nav">Menu</button>
     <nav class="nav" id="nav" aria-label="Main">
@@ -53,8 +50,16 @@
   <div class="contact-grid" style="margin-top:42px">
     <div>
       <h3 style="margin-top:0">Send an enquiry</h3>
-      <!-- Set the form action to your Formspree (or equivalent) endpoint before going live. -->
-      <form class="enquiry" action="https://formspree.io/f/REPLACE_ME" method="POST">
+      <!--
+        Delivers straight to danhilvert@hilvert.com.au via FormSubmit (no account needed).
+        FIRST TIME ONLY: the first enquiry triggers a confirmation email to Dan — he must
+        click the link in it once, and after that every submission arrives in his inbox.
+      -->
+      <form class="enquiry" action="https://formsubmit.co/danhilvert@hilvert.com.au" method="POST">
+        <input type="hidden" name="_subject" value="Website enquiry — Hilvert Advisory">
+        <input type="hidden" name="_template" value="table">
+        <input type="hidden" name="_captcha" value="false">
+        <input type="hidden" name="_next" value="https://www.hilvert.com.au/thank-you.html">
         <label>Name <span class="req">*</span>
           <input type="text" name="name" required autocomplete="name">
         </label>
@@ -70,9 +75,10 @@
         <label>What are you weighing up? <span class="req">*</span>
           <textarea name="message" required placeholder="An acquisition, a divestment, a capital raise, a strategy call — a couple of lines is plenty."></textarea>
         </label>
+        <input class="hp" type="text" name="_honey" tabindex="-1" autocomplete="off" aria-hidden="true">
         <input class="hp" type="text" name="_gotcha" tabindex="-1" autocomplete="off" aria-hidden="true">
         <div><button class="btn" type="submit" style="cursor:pointer;font-family:inherit">Send enquiry</button></div>
-        <p style="font-size:13.5px;color:var(--text-3);margin:0">We reply to every enquiry. Nothing you send here is shared with anyone outside the firm.</p>
+        <p style="font-size:13.5px;color:var(--text-3);margin:0">We reply to every enquiry. Or email <a href="mailto:danhilvert@hilvert.com.au">danhilvert@hilvert.com.au</a> directly — it reaches the same inbox.</p>
       </form>
     </div>
 

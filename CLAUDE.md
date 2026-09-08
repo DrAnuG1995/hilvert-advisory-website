@@ -173,37 +173,38 @@ publishing process. Nothing else. That is the point of the whole setup.
 Four things must happen before launch, in this order. Do them one at a time and confirm
 each works before moving on.
 
-## 1. Make the contact form deliver to Dan's inbox
+## 1. Make the contact form deliver to Dan's inbox — ONE ACTION LEFT
 
-Right now `contact.html` posts to a placeholder and **will silently fail**. Dan's email runs
-on Microsoft 365 (`danhilvert@hilvert.com.au`).
+The form on `contact.html` now posts to **FormSubmit**, which forwards straight to
+`danhilvert@hilvert.com.au`. No account, no API key, nothing to configure.
 
-Because the site is static there is no server-side code to send mail. Use **Formspree** —
-it is free for 50 submissions a month, needs no server configuration, and works on any host.
-
-Walk Dan through this (it needs his email, so he must do the signup himself):
-
-1. Go to **formspree.io** and create a free account using `danhilvert@hilvert.com.au`.
-2. Create a new form. Name it "Hilvert Advisory website enquiry".
-3. Set the notification email to `danhilvert@hilvert.com.au`.
-4. Formspree shows an endpoint like `https://formspree.io/f/xkgbdqwe`. Get that string from him.
-
-Then you do this:
-
-```bash
-cd ~/hilvert-site
-# replace with the real endpoint he gives you
-sed -i '' 's|https://formspree.io/f/REPLACE_ME|https://formspree.io/f/xkgbdqwe|' contact.html
-grep -n 'formspree' contact.html
+```html
+<form action="https://formsubmit.co/danhilvert@hilvert.com.au" method="POST">
 ```
 
-Then **send a real test enquiry from the live site and confirm it arrives in his inbox.**
-Do not mark this done until Dan says he has the email. Check the junk folder if not —
-first-time Formspree mail sometimes lands there, and he should mark it "not junk".
+**But it does not work until Dan activates it, once.** The very first enquiry submitted
+through the live form triggers a confirmation email from FormSubmit to his inbox. He clicks
+the link in that email, and from then on every submission lands normally. Until he clicks it,
+enquiries are held and not delivered.
 
-The Content-Security-Policy in `web.config` already allows `formspree.io`. If you switch to
-a different form provider, you must add that provider's domain to both `form-action` and
-`connect-src` in `web.config`, or the form will fail silently.
+So the sequence is:
+
+1. Go to `https://www.hilvert.com.au/contact.html` and submit a real test enquiry.
+2. Dan checks his inbox — **including the junk folder** — for the FormSubmit confirmation,
+   and clicks the activation link.
+3. Submit a second test enquiry and confirm it arrives as an email.
+4. Have him mark the sender as safe so future enquiries do not get filtered.
+
+Do not mark this done until step 3 has actually happened.
+
+On success the visitor lands on `/thank-you.html`. If you ever change where enquiries go,
+update the `_next` hidden field to match.
+
+**If he would rather not route enquiries through a third party at all,** the alternative is
+Formspree (same trade-off, needs a signup) or moving the site to a host that can run a small
+mail script. Either way some intermediary is involved, because a static site cannot send mail
+by itself. His address is already published in plain text on the page, so the form action
+exposes nothing new.
 
 ## 2. Turn analytics on
 
@@ -239,88 +240,55 @@ the row, and the row is worth keeping.
 
 The repo is private for exactly this reason. Do not make it public.
 
-## 4. Deploy to Conetix
+## 4. Deployment — already done, and it is not Conetix
 
-The domain is already hosted with **Conetix** (Brisbane), on **Plesk for Windows**, and the
-DNS already points there. Nothing about the domain or DNS needs to change. The SSL
-certificate is a Let's Encrypt one that renews itself.
+The site went live on **GitHub Pages**, not Conetix. `www.hilvert.com.au` now resolves to
+GitHub's servers (185.199.108–111.153) via a `CNAME` file in this repo. Pages rebuilds on
+every push to `main`.
 
-### 4a. Back up the old site first — do not skip this
-
-`httpdocs` currently contains the old Umbraco site, which is an ASP.NET application. Once you
-replace it, it is gone. Before touching anything:
-
-1. Log in at **admin.conetix.com** → **Services** → the hosting service → **Plesk**.
-2. In Plesk, go to **Backup Manager** → **Back Up** → full backup of the subscription.
-3. Separately, in **File Manager**, select the `httpdocs` folder, choose **Add to Archive**,
-   and download the resulting `.zip` to Dan's computer as a second copy.
-
-Confirm both exist before continuing.
-
-### 4b. Clear httpdocs
-
-In Plesk **File Manager**, open `httpdocs` and delete its contents — including the hidden
-Umbraco folders (`bin`, `App_Data`, `umbraco`, `config`, `usercontrols`, `xslt`) and the old
-`web.config`. The folder should be empty.
-
-### 4c. Connect the repo (recommended route)
-
-Plesk can pull directly from GitHub, which means future updates are one click — or automatic.
-Conetix documents this at
-`conetix.com.au/support/automatic-git-deployments-via-github-to-plesk-based-hosting/`
-
-1. In Plesk: **Websites & Domains** → **Git** → **Add Repository** → *Remote Git hosting*.
-2. Repository URL — use the **SSH** form, because the repo is private:
-   ```
-   git@github.com:DrAnuG1995/hilvert-advisory-website.git
-   ```
-3. Plesk displays a **public SSH key**. Copy it.
-4. In GitHub: repo → **Settings** → **Deploy keys** → **Add deploy key**. Title it
-   "Conetix Plesk". Paste the key. Leave *Allow write access* **unticked** — Plesk only
-   needs to read.
-5. Back in Plesk, set the **deployment path** to `httpdocs`. Plesk defaults to a subfolder
-   named after the repository — change it, or the site will land at
-   `hilvert.com.au/hilvert-advisory-website/`.
-6. Set the branch to `main`.
-7. Choose **automatic deployment**. Plesk gives you a webhook URL — add it in GitHub under
-   **Settings → Webhooks**, content type `application/json`. After that, every push to `main`
-   publishes itself.
-8. Click **Pull Updates** (or **Deploy**) to publish for the first time.
-
-### 4d. Fallback route, if Git gives trouble
-
-Zip the site folder, upload it through Plesk **File Manager** into `httpdocs`, and extract it
-there. This works fine — it is just manual every time, and it is the workflow that let the
-last site rot. Prefer 4c.
+**This means `git push` publishes to the public internet within about a minute.** There is no
+staging step and no undo before people can see it. Always preview locally first:
 
 ```bash
-cd ~/hilvert-site && zip -r ~/Desktop/hilvert-site.zip . -x '.git/*' -x '.DS_Store'
+git pull && python3 -m http.server 8000
 ```
 
-### 4e. Verify, in this order
+Three consequences of being on Pages rather than Conetix:
+
+- **`web.config` is inert.** GitHub Pages does not read it. It is kept because it is correct
+  and would take effect immediately if the site ever moves to Conetix or another IIS host.
+  Do not delete it.
+- **The old-URL redirects are HTML meta-refresh pages** (`about/index.html`,
+  `services/index.html`, `market-insights/index.html`, `contact/index.html`) rather than real
+  301s, because Pages cannot issue redirects. They work; they pass slightly less search value
+  than a 301 would.
+- **Security headers are gone** apart from HTTPS, which GitHub enforces. Low risk for a site
+  with no logins and no user data.
+
+**The repository is public.** Pages with a custom domain requires that on a free plan. Keep
+this in mind: everything committed here is world-readable, including the full history. Never
+commit a client document, a model, or anything Dan has shared in confidence.
+
+If the site ever needs real 301s and security headers back, **Cloudflare Pages** does both on
+its free tier and would also let Dan move DNS off Conetix. That is a change worth making
+deliberately, not casually.
+
+### Do not cancel the Conetix service
+
+The domain's nameservers are still `ns1.conetix.com` and `ns2.conetix.com`. If that service
+lapses, DNS stops resolving and **both the website and Dan's Microsoft 365 email break.** He
+is paying for hosting he no longer uses, but the DNS is load-bearing. Moving DNS to Cloudflare
+first is the only safe way to stop paying Conetix.
+
+### Verify after any significant change
 
 ```bash
-curl -sSI https://www.hilvert.com.au/ | head -5                    # 200
-curl -sS -o /dev/null -w "%{http_code} %{redirect_url}\n" https://www.hilvert.com.au/about/     # 301 -> /team.html
-curl -sS -o /dev/null -w "%{http_code} %{redirect_url}\n" https://www.hilvert.com.au/market-insights/  # 301 -> /insights/
-curl -sSI https://www.hilvert.com.au/ | grep -i strict-transport    # header present
-curl -sS -o /dev/null -w "%{http_code}\n" https://www.hilvert.com.au/no-such-page  # 404
+curl -sSI https://www.hilvert.com.au/ | head -3
+curl -sS -o /dev/null -w "%{http_code}\n" https://www.hilvert.com.au/about/
+curl -sS -o /dev/null -w "%{http_code}\n" https://www.hilvert.com.au/no-such-page
 ```
 
-Then by hand:
-
-- Open every page and click every link.
-- Check it on a phone.
-- Submit the contact form and confirm the email lands.
-- Paste `https://www.hilvert.com.au/` into LinkedIn's post composer and confirm the preview
-  card shows the dark image with "A defensible number, and the workings behind it."
-  (The old site rendered as a grey box — this is the fix, and Dan will notice it.)
-- In Google Search Console, add the property and submit `sitemap.xml`.
-
-**If the redirects do not work:** IIS needs the URL Rewrite module for the `<rewrite>` block
-in `web.config`. It is normally installed on Plesk Windows. If pages return a 500 error after
-deploying, that module is the likely cause — remove the `<rewrite>` section, confirm the site
-loads, and ask Conetix support to enable URL Rewrite.
+Then by hand: open every page, check it on a phone, and submit the contact form.
 
 ---
 
