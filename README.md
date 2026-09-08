@@ -1,5 +1,10 @@
 # Hilvert Advisory — website
 
+> **Using Claude Code on this project?** Open this folder in Claude Code and it will read
+> [`CLAUDE.md`](CLAUDE.md) automatically. That file is the full manual: installing Git,
+> cloning the repo, getting the contact form delivering to your inbox, deploying to Conetix,
+> adding photos, and writing insight posts. Start there.
+
 Static HTML. No build step, no framework, no database. Every page is a plain file you can
 open in a text editor and change. Deploys to Netlify, Cloudflare Pages, or any static host.
 
@@ -19,7 +24,9 @@ assets/site.js             Mobile nav + track-record filter
 assets/og.png              Link-preview image (1200×630)
 assets/favicon.svg
 robots.txt  sitemap.xml    Search
-_redirects  _headers       Netlify/Cloudflare: old-URL 301s and security headers
+_redirects  _headers       Netlify/Cloudflare equivalents (unused on Conetix)
+web.config                 Conetix/IIS: old-URL 301s, security headers, 404 page
+CLAUDE.md                  Full operating manual, written for Claude Code
 ```
 
 ## Before it goes live — three things
@@ -76,6 +83,12 @@ inside the SVG — that is what a screen reader announces.
 Each page is standalone, so the header and footer appear in every file. If you change a
 nav item, change it in all of them (find-and-replace across the folder works fine).
 That is the trade for having no build step.
+
+## Hosting
+
+The site is hosted with **Conetix** (Brisbane) on **Plesk for Windows**. The web root is
+`httpdocs`. Plesk pulls directly from this GitHub repository, so publishing a change is
+`git push` and nothing else. Full setup steps are in `CLAUDE.md`, Part 1.
 
 ## Local preview
 
