@@ -462,8 +462,7 @@ Use these rather than re-deriving them. If something contradicts this list, ask 
 | Clients | Mid-market, $5–150m revenue; many are technology-enabled service providers |
 | Scale | 51 client organisations, ~25 healthcare sub-sectors, 13 years |
 | Base | Avoca Beach, Central Coast NSW |
-| Mobile | 0411 229 638 |
-| Office | 02 4321 6810 |
+| Phone | 0411 229 638 (mobile — the only number published) |
 | Email | danhilvert@hilvert.com.au |
 | LinkedIn | linkedin.com/in/danhilvert |
 | Services | Strategy Advisory · Emerging Ventures Advisory · Corporate Finance & M&A · Data Insights & Optimisation · Return on Investment |
