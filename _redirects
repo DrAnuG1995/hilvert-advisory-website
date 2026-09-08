@@ -1,0 +1,8 @@
+# Old Umbraco URLs → new pages. Keeps any existing links and search equity alive.
+/about/            /team.html        301
+/about             /team.html        301
+/services/         /services.html    301
+/market-insights/  /insights/        301
+/market-insights   /insights/        301
+/contact/          /contact.html     301
+/umbraco/*         /                 301
